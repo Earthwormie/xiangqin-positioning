@@ -1,0 +1,18 @@
+services:
+  app:
+    image: xiangqin-positioning:latest
+    container_name: xiangqin
+    restart: unless-stopped
+    ports:
+      # 宿主机 443 -> 容器 3000（HTTP）。TLS 由服务器上的 Nginx/宝塔/Cloudflare 反代处理。
+      - "443:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/prod.db
+      # 生产务必改成随机串（部署脚本会自动生成写入 .env）
+      - AUTH_SECRET=${AUTH_SECRET:-please-change-this-secret}
+    volumes:
+      # 数据库：外部持久化，代码更新不重置
+      - ./data:/app/data
+      # 用户上传与静态资源（含二维码）：外部持久化
+      - ./public:/app/public

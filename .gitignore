@@ -1,0 +1,19 @@
+node_modules
+.next
+data
+dist
+*.tar
+*.tar.gz
+.env
+.DS_Store
+_assets
+
+# 本地 SQLite 数据库（运行时生成，不入库）
+prisma/data
+
+# 后台上传的二维码（保留默认 qr.jpg，排除新上传的）
+public/uploads/qr_*
+
+# 原始素材（商业资料，不进公开仓库）
+二维码示意图.jpg
+文风.rtf

@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 每一份用户提交的测评：整行留档，后台可一键导出
+model Submission {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique // 4位报告编号，用户加微信时报此号，后台对上身份
+  gender     String // male / female
+  answers    String // 全部原始答案 JSON
+  dims       String // 9个维度分 JSON
+  total      Int // 加权总分
+  tierKey    String // 评级档位 key
+  tierName   String // 评级档位名
+  ideal      String // 理想型画像 JSON
+  base       String // 底线型画像 JSON
+  wechat     String? // 钩子题留下的微信号（选填）
+  wechatWant String? // 用户想要哪个诱饵（钩子题选项）
+  ip         String?
+  ua         String?
+  createdAt  DateTime @default(now())
+}
+
+// 键值配置：后台傻瓜式修改
+model Setting {
+  key   String @id
+  value String
+}

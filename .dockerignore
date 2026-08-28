@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+data
+public/uploads/qr_*
+*.tar
+*.tar.gz
+_assets
+.env
+npm-debug.log
+.DS_Store
