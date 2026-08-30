@@ -13,6 +13,9 @@ export default function AdminPage() {
   const [newAdminPw, setNewAdminPw] = useState("");
   const [hookTitle, setHookTitle] = useState("");
   const [hookBody, setHookBody] = useState("");
+  // 已保存的基线值，用于判断文案是否有未保存改动
+  const [savedHookTitle, setSavedHookTitle] = useState("");
+  const [savedHookBody, setSavedHookBody] = useState("");
   const [qrImage, setQrImage] = useState("");
   const [wechatMode, setWechatMode] = useState("optional");
   const [showQr, setShowQr] = useState(true);
@@ -25,8 +28,12 @@ export default function AdminPage() {
     if (res.ok) {
       const d = await res.json();
       setUserPassword(d.userPassword);
-      setHookTitle(d.hookTitle || "");
-      setHookBody(Array.isArray(d.hookBody) ? d.hookBody.join("\n") : d.hookBody || "");
+      const t = d.hookTitle || "";
+      const bd = Array.isArray(d.hookBody) ? d.hookBody.join("\n") : d.hookBody || "";
+      setHookTitle(t);
+      setHookBody(bd);
+      setSavedHookTitle(t);
+      setSavedHookBody(bd);
       setQrImage(d.qrImage);
       setWechatMode(d.wechatMode || "optional");
       setShowQr(d.showQr !== false);
@@ -60,6 +67,25 @@ export default function AdminPage() {
     setMsg(t);
     setTimeout(() => setMsg(""), 3000);
   };
+
+  // 未保存的改动：文案被改过、或密码框有内容、或选了图还没上传
+  const dirty =
+    hookTitle !== savedHookTitle ||
+    hookBody !== savedHookBody ||
+    newUserPw.trim() !== "" ||
+    newAdminPw.trim() !== "" ||
+    qrFile !== null;
+
+  // 离开页面前拦截（刷新/关闭标签）
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
 
   const saveUserPw = async () => {
     if (!newUserPw.trim()) return flash("请输入新的测评密码");
@@ -98,6 +124,8 @@ export default function AdminPage() {
       body: JSON.stringify({ hookTitle, hookBody }),
     });
     if (res.ok) {
+      setSavedHookTitle(hookTitle);
+      setSavedHookBody(hookBody);
       flash("引流文案已保存 ✓");
     } else flash("保存失败");
   };
@@ -200,6 +228,31 @@ export default function AdminPage() {
           }}
         >
           {msg}
+        </div>
+      )}
+
+      {dirty && (
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            background: "var(--gold-tint)",
+            border: "1px solid var(--gold)",
+            color: "#7a5310",
+            borderRadius: 12,
+            padding: "12px 16px",
+            marginBottom: 16,
+            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>有未保存的修改</span>
+          <span style={{ color: "var(--ink-soft)" }}>
+            改完记得点对应的「修改 / 保存 / 上传」按钮，否则离开页面会丢失。
+          </span>
         </div>
       )}
 
