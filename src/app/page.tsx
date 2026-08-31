@@ -35,9 +35,9 @@ export default function Home() {
       <header className="masthead">
         <div className="eyebrow">Marriage Market · Positioning</div>
         <h1>
-          相亲市场
+          择偶定位
           <br />
-          定位测评
+          测评
         </h1>
         <p className="dek">
           先别急着找人。花五分钟，把你手里的牌摊开看清楚——你现在站在婚恋市场的哪个位置，够得上什么样的人，
